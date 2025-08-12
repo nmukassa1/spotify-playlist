@@ -1,26 +1,180 @@
 @import "tailwindcss";
+@import "tw-animate-css";
+
+@custom-variant dark (&:is(.dark *));
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  /* Updated to use Spotify's light theme colors */
+  --background: oklch(0.98 0 0);
+  --foreground: oklch(0.145 0 0);
+  --card: oklch(1 0 0);
+  --card-foreground: oklch(0.145 0 0);
+  --popover: oklch(1 0 0);
+  --popover-foreground: oklch(0.145 0 0);
+  --primary: oklch(0.556 0.149 142.5); /* Spotify Green #1DB954 */
+  --primary-foreground: oklch(1 0 0);
+  --secondary: oklch(0.94 0 0);
+  --secondary-foreground: oklch(0.145 0 0);
+  --muted: oklch(0.94 0 0);
+  --muted-foreground: oklch(0.556 0 0);
+  --accent: oklch(0.556 0.149 142.5); /* Spotify Green */
+  --accent-foreground: oklch(1 0 0);
+  --destructive: oklch(0.577 0.245 27.325);
+  --destructive-foreground: oklch(1 0 0);
+  --border: oklch(0.89 0 0);
+  --input: oklch(0.89 0 0);
+  --ring: oklch(0.556 0.149 142.5);
+  --chart-1: oklch(0.556 0.149 142.5);
+  --chart-2: oklch(0.6 0.118 184.704);
+  --chart-3: oklch(0.398 0.07 227.392);
+  --chart-4: oklch(0.828 0.189 84.429);
+  --chart-5: oklch(0.769 0.188 70.08);
+  --radius: 0.5rem;
+  --sidebar: oklch(0.98 0 0);
+  --sidebar-foreground: oklch(0.145 0 0);
+  --sidebar-primary: oklch(0.556 0.149 142.5);
+  --sidebar-primary-foreground: oklch(1 0 0);
+  --sidebar-accent: oklch(0.94 0 0);
+  --sidebar-accent-foreground: oklch(0.145 0 0);
+  --sidebar-border: oklch(0.89 0 0);
+  --sidebar-ring: oklch(0.556 0.149 142.5);
+
+  /* Added Spotify-specific color variables */
+  --spotify-green: oklch(0.556 0.149 142.5); /* #1DB954 */
+  --spotify-black: oklch(0.07 0 0); /* #121212 */
+  --spotify-dark-gray: oklch(0.1 0 0); /* #191414 */
+  --spotify-gray: oklch(0.16 0 0); /* #282828 */
+  --spotify-light-gray: oklch(0.7 0 0); /* #B3B3B3 */
+}
+
+.dark {
+  /* Updated to use Spotify's dark theme colors */
+  --background: oklch(0.07 0 0); /* Spotify Black #121212 */
+  --foreground: oklch(1 0 0);
+  --card: oklch(0.1 0 0); /* Spotify Dark Gray #191414 */
+  --card-foreground: oklch(1 0 0);
+  --popover: oklch(0.1 0 0);
+  --popover-foreground: oklch(1 0 0);
+  --primary: oklch(0.556 0.149 142.5); /* Spotify Green */
+  --primary-foreground: oklch(0.07 0 0);
+  --secondary: oklch(0.16 0 0); /* Spotify Gray #282828 */
+  --secondary-foreground: oklch(1 0 0);
+  --muted: oklch(0.16 0 0);
+  --muted-foreground: oklch(0.7 0 0); /* Spotify Light Gray */
+  --accent: oklch(0.556 0.149 142.5);
+  --accent-foreground: oklch(0.07 0 0);
+  --destructive: oklch(0.577 0.245 27.325);
+  --destructive-foreground: oklch(1 0 0);
+  --border: oklch(0.16 0 0);
+  --input: oklch(0.16 0 0);
+  --ring: oklch(0.556 0.149 142.5);
+  --chart-1: oklch(0.556 0.149 142.5);
+  --chart-2: oklch(0.696 0.17 162.48);
+  --chart-3: oklch(0.769 0.188 70.08);
+  --chart-4: oklch(0.627 0.265 303.9);
+  --chart-5: oklch(0.645 0.246 16.439);
+  --sidebar: oklch(0.07 0 0);
+  --sidebar-foreground: oklch(1 0 0);
+  --sidebar-primary: oklch(0.556 0.149 142.5);
+  --sidebar-primary-foreground: oklch(0.07 0 0);
+  --sidebar-accent: oklch(0.16 0 0);
+  --sidebar-accent-foreground: oklch(1 0 0);
+  --sidebar-border: oklch(0.16 0 0);
+  --sidebar-ring: oklch(0.556 0.149 142.5);
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --color-chart-1: var(--chart-1);
+  --color-chart-2: var(--chart-2);
+  --color-chart-3: var(--chart-3);
+  --color-chart-4: var(--chart-4);
+  --color-chart-5: var(--chart-5);
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+  --color-sidebar: var(--sidebar);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-ring: var(--sidebar-ring);
+
+  /* Added Spotify color utilities */
+  --color-spotify-green: var(--spotify-green);
+  --color-spotify-black: var(--spotify-black);
+  --color-spotify-dark-gray: var(--spotify-dark-gray);
+  --color-spotify-gray: var(--spotify-gray);
+  --color-spotify-light-gray: var(--spotify-light-gray);
+
+  /* Added font family configuration */
+  --font-family-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
+  --font-family-display: "Inter", ui-sans-serif, system-ui, sans-serif;
+  --font-family-mono: "JetBrains Mono", ui-monospace, monospace;
+
+  /* Added spacing utilities for consistent layouts */
+  --spacing-section: 2rem;
+  --spacing-card: 1.5rem;
+  --spacing-element: 1rem;
+
+  /* Added animation durations */
+  --duration-fast: 150ms;
+  --duration-normal: 200ms;
+  --duration-slow: 300ms;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
   }
-}
+  body {
+    @apply bg-background text-foreground font-sans antialiased;
+  }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  /* Added utility classes for Spotify colors */
+  .bg-spotify-green {
+    background-color: var(--color-spotify-green);
+  }
+  .text-spotify-green {
+    color: var(--color-spotify-green);
+  }
+  .bg-spotify-black {
+    background-color: var(--color-spotify-black);
+  }
+  .bg-spotify-dark-gray {
+    background-color: var(--color-spotify-dark-gray);
+  }
+  .bg-spotify-gray {
+    background-color: var(--color-spotify-gray);
+  }
+  .text-spotify-light-gray {
+    color: var(--color-spotify-light-gray);
+  }
+
+  /* Fixed duplicate hover selector and added proper hover states */
+  .hover-spotify-green:hover {
+    background-color: var(--color-spotify-green);
+    color: var(--color-spotify-black);
+  }
 }
