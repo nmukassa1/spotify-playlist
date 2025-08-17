@@ -5,7 +5,7 @@ import { signOut } from "@/lib/actions"
 
 export default async function DashboardHeader() {
   // Get current user
-  const supabase = createClient()
+  const supabase = await createClient()
   const {
     data: { user },
   } = await supabase.auth.getUser()

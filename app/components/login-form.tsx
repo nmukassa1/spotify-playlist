@@ -39,7 +39,8 @@ export default function LoginForm() {
           </div>
         )}
 
-        <form action={signInWithOAuth.bind(null, "spotify")} className="w-full">
+        {/* <form action={signInWithOAuth.bind(null, "spotify")} className="w-full"> */}
+        <form action={() => signInWithOAuth( "spotify")} className="w-full">
           <Button
             type="submit"
             className="w-full bg-spotify-green hover:bg-spotify-green-dark text-black font-bold py-3 text-base rounded-full h-12 transition-all duration-200 flex items-center justify-center gap-3"

@@ -1,4 +1,5 @@
-import { createMiddlewareClient } from "@supabase/auth-helpers-nextjs"
+// import { createClient } from "@supabase/supabase-js"
+import { createClient } from "@supabase/supabase-js"
 import { NextResponse, type NextRequest } from "next/server"
 
 // Check if Supabase environment variables are available
@@ -17,33 +18,53 @@ export async function updateSession(request: NextRequest) {
   }
 
   const res = NextResponse.next()
-
-  // Create a Supabase client configured to use cookies
-  const supabase = createMiddlewareClient({ req: request, res })
-
-  // Check if this is an auth callback
   const requestUrl = new URL(request.url)
-  const code = requestUrl.searchParams.get("code")
+  const pathname = requestUrl.pathname
 
-  if (code) {
-    // Exchange the code for a session
-    await supabase.auth.exchangeCodeForSession(code)
-    // Redirect to dashboard after successful auth
-    return NextResponse.redirect(new URL("/dashboard", request.url))
+  // Skip auth check for auth-related routes
+  if (pathname.startsWith("/auth/")) {
+    return res
   }
 
-  // Refresh session if expired - required for Server Components
-  await supabase.auth.getSession()
-
-  const isProtectedRoute = request.nextUrl.pathname.startsWith("/dashboard")
+  // Only check session for protected routes
+  const isProtectedRoute = pathname.startsWith("/dashboard")
 
   if (isProtectedRoute) {
-    const {
-      data: { session },
-    } = await supabase.auth.getSession()
+    try {
+      // Create a Supabase client configured to use cookies from the request
+      const supabase = createClient(
+        process.env.NEXT_PUBLIC_SUPABASE_URL!,
+        process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+        {
+          auth: {
+            autoRefreshToken: true,
+            persistSession: true,
+            detectSessionInUrl: false,
+          },
+          global: {
+            headers: {
+              cookie: request.headers.get('cookie') || '',
+            },
+          },
+        }
+      )
 
-    if (!session) {
-      const redirectUrl = new URL("/auth/login", request.url)
+      // Debug: Log the cookies being sent
+      const cookies = request.headers.get('cookie') || ''
+      console.log("Middleware - Cookies received:", cookies)
+
+      // Get the session from cookies
+      const { data: { session } } = await supabase.auth.getSession()
+      console.log("Middleware - Protected route:", pathname, "Session:", session ? "Valid" : "None")
+      
+      if (!session) {
+        console.log("Middleware - No session, redirecting to login")
+        const redirectUrl = new URL("/auth/login", request.url)
+        return NextResponse.redirect(redirectUrl)
+      }
+    } catch (error) {
+      console.error("Session check error:", error)
+      const redirectUrl = new URL("/auth/login?error=session_error", request.url)
       return NextResponse.redirect(redirectUrl)
     }
   }

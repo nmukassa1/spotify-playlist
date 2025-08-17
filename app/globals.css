@@ -178,3 +178,7 @@
     color: var(--color-spotify-black);
   }
 }
+
+button {
+  cursor: pointer;  
+}

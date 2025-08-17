@@ -6,7 +6,7 @@ import { createClient } from "@/lib/supabase/server"
 
 export default async function HeroSection() {
   // Check if user is authenticated
-  const supabase = createClient()
+  const supabase = await createClient()
   const {
     data: { user },
   } = await supabase.auth.getUser()
