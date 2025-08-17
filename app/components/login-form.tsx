@@ -1,9 +1,7 @@
-"use client"
 
 import { Button } from "@/components/ui/button"
 import { Music } from "lucide-react"
-import { signInWithOAuth } from "@/lib/actions"
-import { useSearchParams } from "next/navigation"
+import { signIn } from "@/auth"
 
 
 
@@ -16,8 +14,6 @@ function SpotifyIcon() {
 }
 
 export default function LoginForm() {
-  const searchParams = useSearchParams()
-  const error = searchParams.get("error")
 
   return (
     <div className="w-full max-w-md space-y-8 bg-spotify-dark-elevated p-8 rounded-lg">
@@ -32,15 +28,14 @@ export default function LoginForm() {
       </div>
 
       <div className="space-y-4">
-        {error && (
-          <div className="bg-red-500/10 border border-red-500/50 text-red-400 px-4 py-3 rounded-md text-sm">
-            {error === "oauth_error" && "Authentication failed. Please try again."}
-            {error === "oauth_callback_error" && "Authentication callback failed. Please try again."}
-          </div>
-        )}
+      
 
-        {/* <form action={signInWithOAuth.bind(null, "spotify")} className="w-full"> */}
-        <form action={() => signInWithOAuth( "spotify")} className="w-full">
+        <form
+              action={async () => {
+                "use server"
+                await signIn("spotify")
+              }}
+            >
           <Button
             type="submit"
             className="w-full bg-spotify-green hover:bg-spotify-green-dark text-black font-bold py-3 text-base rounded-full h-12 transition-all duration-200 flex items-center justify-center gap-3"
