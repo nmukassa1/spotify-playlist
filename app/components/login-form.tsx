@@ -33,14 +33,15 @@ export default function LoginForm() {
 
       <div className="space-y-4">
         {error && (
-          <div className="bg-red-500/10 border border-red-500/50 text-red-400 px-4 py-3 rounded-md text-sm">
+          <div className="bg-red-500/10 border border-red-500/50 text-red-400 px-4 py-3 rounded-md text-sm text-white">
             {error === "oauth_error" && "Authentication failed. Please try again."}
             {error === "oauth_callback_error" && "Authentication callback failed. Please try again."}
+            {error === "session_error" && "No session created"}
           </div>
         )}
 
         {/* <form action={signInWithOAuth.bind(null, "spotify")} className="w-full"> */}
-        <form action={() => signInWithOAuth( "spotify")} className="w-full">
+        <form action={() => signInWithOAuth()} className="w-full">
           <Button
             type="submit"
             className="w-full bg-spotify-green hover:bg-spotify-green-dark text-black font-bold py-3 text-base rounded-full h-12 transition-all duration-200 flex items-center justify-center gap-3"
