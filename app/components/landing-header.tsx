@@ -1,15 +1,16 @@
 import { Button } from "@/components/ui/button"
-import { Play, LogOut } from "lucide-react"
+import { Play } from "lucide-react"
 import Link from "next/link"
-import { createClient } from "@/lib/supabase/server"
-import { signOut } from "@/lib/actions"
+
+import {
+  SignInButton,
+  SignedIn,
+  SignedOut,
+  UserButton,
+  SignOutButton
+} from '@clerk/nextjs'
 
 export default async function LandingHeader() {
-  // Check if user is authenticated
-  const supabase = await createClient()
-  const {
-    data: { user },
-  } = await supabase.auth.getUser()
 
   return (
     <header className="border-b border-spotify-gray-dark">
@@ -33,7 +34,7 @@ export default async function LandingHeader() {
             </a>
           </nav>
 
-          {user ? (
+          <SignedIn>
             <div className="flex items-center gap-3">
               <Link href="/dashboard">
                 <Button
@@ -43,29 +44,17 @@ export default async function LandingHeader() {
                   Dashboard
                 </Button>
               </Link>
-              <form action={signOut}>
-                <Button
-                  type="submit"
-                  variant="outline"
-                  className="border-spotify-gray text-white hover:bg-spotify-gray-dark bg-transparent"
-                >
-                  <LogOut className="w-4 h-4 mr-2" />
-                  Sign Out
-                </Button>
-              </form>
+            <SignOutButton/>
+
+              <UserButton/>
             </div>
-          ) : (
+            </SignedIn>
+
+            <SignedOut>
             <div className="flex items-center gap-3">
-              <Link href="/auth/login">
-                <Button
-                  variant="outline"
-                  className="border-spotify-gray bg-spotify-green text-black hover:bg-spotify-gray-dark"
-                >
-                  Log In
-                </Button>
-              </Link>
+              <SignInButton/>
             </div>
-          )}
+            </SignedOut>
         </div>
       </div>
     </header>

@@ -1,14 +1,10 @@
 import { Button } from "@/components/ui/button"
-import { Music, Plus, Settings, LogOut, User } from "lucide-react"
-import { createClient } from "@/lib/supabase/server"
-import { signOut } from "@/lib/actions"
+import { Music, Plus, Settings } from "lucide-react"
+import {
+  SignOutButton
+} from '@clerk/nextjs'
 
 export default async function DashboardHeader() {
-  // Get current user
-  const supabase = await createClient()
-  const {
-    data: { user },
-  } = await supabase.auth.getUser()
 
   return (
     <header className="hidden md:block bg-[#191414] border-b border-[#282828]">
@@ -25,12 +21,7 @@ export default async function DashboardHeader() {
           </div>
 
           <div className="flex items-center gap-3">
-            {user && (
-              <div className="flex items-center gap-2 text-sm text-[#B3B3B3]">
-                <User className="h-4 w-4" />
-                <span>{user.email}</span>
-              </div>
-            )}
+          
             <Button
               variant="outline"
               size="sm"
@@ -43,17 +34,7 @@ export default async function DashboardHeader() {
               <Plus className="h-4 w-4 mr-2" />
               New Rule
             </Button>
-            <form action={signOut}>
-              <Button
-                type="submit"
-                variant="outline"
-                size="sm"
-                className="border-[#535353] text-white hover:bg-[#282828] bg-transparent"
-              >
-                <LogOut className="h-4 w-4 mr-2" />
-                Sign Out
-              </Button>
-            </form>
+           <SignOutButton/>
           </div>
         </div>
       </div>

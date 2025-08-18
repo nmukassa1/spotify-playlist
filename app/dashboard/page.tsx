@@ -1,49 +1,17 @@
-import { createClient, isSupabaseConfigured } from "@/lib/supabase/server"
-// import { redirect } from "next/navigation"
+
 import DashboardHeader from "../components/dashboard-header"
 import MobileHeader from "../components/mobile-header"
 import QuickStats from "../components/quick-stats"
 import PlaylistsSection from "../components/playlists-section"
 import ListeningStats from "../components/listening-stats"
 import DashboardSidebar from "../components/dashboard-sidebar"
-// import { cookies } from "next/headers"
+// import { useUser } from "@clerk/clerk-react";
 
-export default async function Dashboard() {
-  // If Supabase is not configured, show setup message
-  if (!isSupabaseConfigured) {
-    return (
-      <div className="flex min-h-screen items-center justify-center bg-spotify-dark">
-        <h1 className="text-2xl font-bold mb-4 text-white">Connect Supabase to get started</h1>
-      </div>
-    )
-  }
-
-  // Check if user is authenticated
-  const supabase = await createClient()
-  const {
-    data: { user },
-  } = await supabase.auth.getUser()
-
-  const { data: { session } } = await supabase.auth.getSession()
-
-  console.log("Dashboard - Session:", session);
-
-  // Access Next.js cookies (server-side)
-  // Note: You can use cookies() from 'next/headers' in a server component
-  // Example:
-  // // 
-  // const cookieStore = cookies()
-  // const cookie = (await cookieStore).get("sb-access-token")
-
-
+export default function Dashboard() {
   
-  
-  // If no user, redirect to login
-  // if (!cookie) {
-  //   redirect("/auth/login")
-  // }
+  // const { user } = useUser();
 
-  console.log(user);
+  // console.log(user);
   
 
   return (

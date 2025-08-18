@@ -1,15 +1,14 @@
 import { Button } from "@/components/ui/button"
 import { Play, ArrowRight } from "lucide-react"
 import Link from "next/link"
-import { createClient } from "@/lib/supabase/server"
+import {
+  SignInButton,
+  SignedIn,
+  SignedOut,
+  UserButton,
+} from '@clerk/nextjs'
 
 export default async function CTASection() {
-  // Check if user is authenticated
-  const supabase = await createClient()
-  const {
-    data: { user },
-  } = await supabase.auth.getUser()
-
   
  
 
@@ -21,7 +20,7 @@ export default async function CTASection() {
           Join thousands of music lovers who've discovered their new favorite songs through AI-powered playlists.
         </p>
 
-        {user ? (
+        <SignedIn>
           <Link href="/dashboard">
             <Button size="lg" className="bg-spotify-green hover:bg-spotify-green-dark text-black font-semibold">
               <Play className="w-5 h-5 mr-2" />
@@ -29,7 +28,9 @@ export default async function CTASection() {
               <ArrowRight className="w-5 h-5 ml-2" />
             </Button>
           </Link>
-        ) : (
+        </SignedIn>
+
+        <SignedOut>
           <Link href="/auth/sign-up">
             <Button size="lg" className="bg-spotify-green hover:bg-spotify-green-dark text-black font-semibold">
               <Play className="w-5 h-5 mr-2" />
@@ -37,7 +38,7 @@ export default async function CTASection() {
               <ArrowRight className="w-5 h-5 ml-2" />
             </Button>
           </Link>
-        )}
+          </SignedOut>
       </div>
     </section>
   )

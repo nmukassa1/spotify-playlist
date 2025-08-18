@@ -1,7 +1,6 @@
 
 import { Button } from "@/components/ui/button"
 import { Music } from "lucide-react"
-import { signIn } from "@/auth"
 
 
 
@@ -30,12 +29,7 @@ export default function LoginForm() {
       <div className="space-y-4">
       
 
-        <form
-              action={async () => {
-                "use server"
-                await signIn("spotify")
-              }}
-            >
+        <form>
           <Button
             type="submit"
             className="w-full bg-spotify-green hover:bg-spotify-green-dark text-black font-bold py-3 text-base rounded-full h-12 transition-all duration-200 flex items-center justify-center gap-3"

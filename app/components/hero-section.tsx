@@ -2,14 +2,13 @@ import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Play, ArrowRight } from "lucide-react"
 import Link from "next/link"
-import { createClient } from "@/lib/supabase/server"
+import {
+  SignedIn,
+  SignedOut,
+} from '@clerk/nextjs'
 
 export default async function HeroSection() {
-  // Check if user is authenticated
-  const supabase = await createClient()
-  const {
-    data: { user },
-  } = await supabase.auth.getUser()
+  
 
   return (
     <section className="py-16 md:py-24">
@@ -28,7 +27,7 @@ export default async function HeroSection() {
         </p>
 
         <div className="flex flex-col sm:flex-row gap-4 justify-center">
-          {user ? (
+          <SignedIn>
             <>
               <Link href="/dashboard">
                 <Button size="lg" className="bg-spotify-green hover:bg-spotify-green-dark text-black font-semibold">
@@ -45,7 +44,9 @@ export default async function HeroSection() {
                 Watch Demo
               </Button>
             </>
-          ) : (
+            </SignedIn>
+
+            <SignedOut>
             <>
               <Link href="/auth/sign-up">
                 <Button size="lg" className="bg-spotify-green hover:bg-spotify-green-dark text-black font-semibold">
@@ -61,7 +62,7 @@ export default async function HeroSection() {
                 Watch Demo
               </Button>
             </>
-          )}
+            </SignedOut>
         </div>
       </div>
     </section>
