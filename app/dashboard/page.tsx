@@ -5,15 +5,10 @@ import QuickStats from "../components/quick-stats"
 import PlaylistsSection from "../components/playlists-section"
 import ListeningStats from "../components/listening-stats"
 import DashboardSidebar from "../components/dashboard-sidebar"
-import { getPlaylist, getPlaylists } from "@/lib/spotify/queries"
+import Playlists from "../components/Playlists"
 
 export default async function Dashboard() {
   
-
-  const playlists = await getPlaylists();
-  const firstPlaylistLink = playlists.items[1].href
-  const playlist = await getPlaylist(firstPlaylistLink)
-  console.log(playlist);
   
   
   
@@ -40,6 +35,8 @@ export default async function Dashboard() {
             </div>
 
             <DashboardSidebar />
+
+            <Playlists />
           </div>
         </div>
       </main>
