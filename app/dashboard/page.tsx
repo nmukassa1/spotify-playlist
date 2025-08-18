@@ -7,6 +7,9 @@ import ListeningStats from "../components/listening-stats"
 import DashboardSidebar from "../components/dashboard-sidebar"
 import Playlists from "../components/Playlists"
 
+// Force dynamic rendering since this page uses authentication
+export const dynamic = 'force-dynamic'
+
 export default async function Dashboard() {
   
   
