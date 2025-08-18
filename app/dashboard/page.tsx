@@ -5,13 +5,15 @@ import QuickStats from "../components/quick-stats"
 import PlaylistsSection from "../components/playlists-section"
 import ListeningStats from "../components/listening-stats"
 import DashboardSidebar from "../components/dashboard-sidebar"
-// import { useUser } from "@clerk/clerk-react";
+import {getSpotifyAccount} from "@/lib/server/clerk"
 
-export default function Dashboard() {
+export default async function Dashboard() {
   
-  // const { user } = useUser();
 
-  // console.log(user);
+  const user = await getSpotifyAccount()
+  console.log(user);
+  
+  
   
 
   return (
