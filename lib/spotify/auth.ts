@@ -1,26 +1,41 @@
 "use server"
 
-export async function getPlaylists(userId: string) {
-  const accessToken = await getAccessToken()
-  
-  try {
-    const response = await fetch(`https://api.spotify.com/v1/users/${userId}/playlists`, {
-      headers: {
-        // Authorization: `Bearer ${process.env.AUTH_SPOTIFY_SECRET}`
-        Authorization: `Bearer ${accessToken}`
-      }
-    });
+import { currentUser } from "@clerk/nextjs/server";
 
-    if (!response.ok) {
-      console.log(response);
-      
-      throw new Error(`Failed to fetch playlists: ${response.status} ${response.statusText}`);
+export interface SpotifyAccount {
+  id: string;
+  externalId: string; // This is the Spotify user ID
+  username?: string | null;
+  provider: string;
+}
+
+export async function getSpotifyAccount(): Promise<SpotifyAccount | null> {
+  try {
+    const user = await currentUser();
+    
+    if (!user) {
+      return null;
+    }
+    
+
+    const spotifyAccount = user.externalAccounts.find(
+      account => account.provider === "oauth_spotify"
+    );
+
+    if (!spotifyAccount) {
+      return null;
     }
 
-    const data = await response.json();
-    return data;
-  } catch (err) {
-    console.error(err);
+    return spotifyAccount
+
+    // return {
+    //   id: spotifyAccount.id,
+    //   externalId: spotifyAccount.externalId,
+    //   username: spotifyAccount.username,
+    //   provider: spotifyAccount.provider
+    // };
+  } catch (error) {
+    console.error("Error fetching Spotify account:", error);
     return null;
   }
 }
@@ -55,6 +70,8 @@ export async function getAccessToken() {
     }
 
     const data = await response.json();
+    console.log("Access Token:", data.access_token);
+    
     return data.access_token; // { access_token, token_type, expires_in }
   } catch (err) {
     console.error(err);

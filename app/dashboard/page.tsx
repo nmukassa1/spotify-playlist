@@ -5,26 +5,16 @@ import QuickStats from "../components/quick-stats"
 import PlaylistsSection from "../components/playlists-section"
 import ListeningStats from "../components/listening-stats"
 import DashboardSidebar from "../components/dashboard-sidebar"
-import {getSpotifyAccount} from "@/lib/server/clerk"
-import { getAccessToken } from "@/lib/actions"
-import { getPlaylists } from "@/lib/actions"
+import { getPlaylist, getPlaylists } from "@/lib/spotify/queries"
 
 export default async function Dashboard() {
   
 
-  const user = await getSpotifyAccount()
-
-  if (!user || !user.id) {
-    throw new Error("Spotify account not found or missing id");
-  }
-  console.log(user);
-  const accessToken = await getAccessToken()
-  console.log(accessToken);
+  const playlists = await getPlaylists();
+  const firstPlaylistLink = playlists.items[1].href
+  const playlist = await getPlaylist(firstPlaylistLink)
+  console.log(playlist);
   
-  
-
-  const playlist = await getPlaylists(user.externalId);
-  console.log(playlist.items[0].tracks.href);
   
   
 
