@@ -14,6 +14,7 @@ export async function getSpotifyAccount(): Promise<SpotifyAccount | null> {
     if (!user) {
       return null;
     }
+    
 
     const spotifyAccount = user.externalAccounts.find(
       account => account.provider === "oauth_spotify"
@@ -23,12 +24,14 @@ export async function getSpotifyAccount(): Promise<SpotifyAccount | null> {
       return null;
     }
 
-    return {
-      id: spotifyAccount.id,
-      externalId: spotifyAccount.externalId,
-      username: spotifyAccount.username,
-      provider: spotifyAccount.provider
-    };
+    return spotifyAccount
+
+    // return {
+    //   id: spotifyAccount.id,
+    //   externalId: spotifyAccount.externalId,
+    //   username: spotifyAccount.username,
+    //   provider: spotifyAccount.provider
+    // };
   } catch (error) {
     console.error("Error fetching Spotify account:", error);
     return null;

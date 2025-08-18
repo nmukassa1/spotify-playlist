@@ -1,42 +1,63 @@
 "use server"
 
-// import { createClient } from "@/lib/supabase/server"
-// import { redirect } from "next/navigation"
-// import { cookies } from "next/headers"
-
-// export async function signInWithOAuth(provider: "spotify") {
-  // const supabase = await createClient()
+export async function getPlaylists(userId: string) {
+  const accessToken = await getAccessToken()
   
+  try {
+    const response = await fetch(`https://api.spotify.com/v1/users/${userId}/playlists`, {
+      headers: {
+        // Authorization: `Bearer ${process.env.AUTH_SPOTIFY_SECRET}`
+        Authorization: `Bearer ${accessToken}`
+      }
+    });
 
-  // const { data } = await supabase.auth.signInWithOAuth({
-  //   provider,
-  //   options: {
-  //     redirectTo: `${process.env.NEXT_PUBLIC_SITE_URL}/auth/callback`
-  //   }
-  // })
+    if (!response.ok) {
+      console.log(response);
+      
+      throw new Error(`Failed to fetch playlists: ${response.status} ${response.statusText}`);
+    }
 
-  // if (error) {
-  //   console.error("OAuth error:", error)
-  //   redirect("/auth/login?error=oauth_error")
-  // }
-  
-  // if (data.url) {
-  //   console.log("OAuth URL:", data.url);
-  //   redirect(data.url)
-  // }
-  
-  // If no URL is returned, something went wrong
-  // redirect("/auth/login?error=no_oauth_url")
-// }
+    const data = await response.json();
+    return data;
+  } catch (err) {
+    console.error(err);
+    return null;
+  }
+}
 
-// export async function signOut() {
-//   const supabase = await createClient()
-//   await supabase.auth.signOut()
+// To get a Spotify access token, you need to use the Client Credentials Flow.
+// This requires sending a POST request with grant_type=client_credentials
+// and using Basic Auth with your client_id and client_secret (not Bearer).
 
-//   // Delete the Supabase access/refresh token cookies using Next.js cookies API
-//   const cookieStore = await cookies()
-//   cookieStore.delete("sb-access-token")
-//   cookieStore.delete("sb-refresh-token")
+export async function getAccessToken() {
+  try {
+    const clientId = process.env.AUTH_SPOTIFY_ID;
+    const clientSecret = process.env.AUTH_SPOTIFY_SECRET;
 
-//   redirect("/auth/login")
-// }
+    if (!clientId || !clientSecret) {
+      throw new Error("Missing Spotify client ID or secret in environment variables.");
+    }
+
+    const credentials = Buffer.from(`${clientId}:${clientSecret}`).toString("base64");
+
+    const response = await fetch("https://accounts.spotify.com/api/token", {
+      method: "POST",
+      headers: {
+        "Authorization": `Basic ${credentials}`,
+        "Content-Type": "application/x-www-form-urlencoded"
+      },
+      body: "grant_type=client_credentials"
+    });
+
+    if (!response.ok) {
+      console.log(response);
+      throw new Error(`Failed to fetch access token: ${response.status} ${response.statusText}`);
+    }
+
+    const data = await response.json();
+    return data.access_token; // { access_token, token_type, expires_in }
+  } catch (err) {
+    console.error(err);
+    return null;
+  }
+}
