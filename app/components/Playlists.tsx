@@ -1,63 +1,12 @@
-import { getPlaylistTracks, getPlaylists } from "@/lib/spotify/queries";
+import {  getPlaylists } from "@/lib/spotify/queries";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Play, MoreHorizontal, Music, Clock, ExternalLink } from "lucide-react";
 import Image from "next/image";
+import {fetchAllPlaylistTracks} from "@/lib/spotify/util";
 import { PlaylistTrackItem, SpotifyPlaylists } from "@/lib/spotify/types";
 
-// Function to fetch all tracks from a playlist
-async function fetchAllPlaylistTracks(playlistUrl: string): Promise<PlaylistTrackItem[]> {
-    const limiter = 20; // Default amount of songs returned per batch
-    const offset = 0; // Index of first item to return
-    
-    try {
-        // Fetch first batch
-        const firstBatch = await getPlaylistTracks(playlistUrl + `?offset=${offset}&limit=${limiter}`);
-        
-        if (!firstBatch) {
-            console.error("Failed to fetch first batch of tracks");
-            return [];
-        }
-        
-        let songs: PlaylistTrackItem[] = [];
-        const numberOfTracksInPlaylist = firstBatch.total;
-        const iterations = Math.ceil(numberOfTracksInPlaylist / limiter);
-        
-        console.log(`Total tracks in playlist: ${numberOfTracksInPlaylist}, fetching in ${iterations} batches`);
-        
-        // Add first batch to songs array
-        if (firstBatch.items && Array.isArray(firstBatch.items)) {
-            songs = [...songs, ...firstBatch.items];
-            console.log(`Added first batch: ${firstBatch.items.length} tracks`);
-        }
-        
-        // Fetch remaining batches
-        for (let i = 1; i < iterations; i++) {
-            try {
-                const nextOffset = i * limiter;
-                console.log(`Fetching batch ${i + 1}, offset: ${nextOffset}`);
-                
-                const nextBatch = await getPlaylistTracks(playlistUrl + `?offset=${nextOffset}&limit=${limiter}`);
-                
-                if (nextBatch && nextBatch.items && Array.isArray(nextBatch.items)) {
-                    songs = [...songs, ...nextBatch.items];
-                    console.log(`Added batch ${i + 1}: ${nextBatch.items.length} tracks`);
-                }
-            } catch (error) {
-                console.error(`Error fetching batch ${i + 1}:`, error);
-                break; // Stop fetching if there's an error
-            }
-        }
-        
-        console.log(`Total songs fetched: ${songs.length}`);
-        return songs;
-        
-    } catch (error) {
-        console.error("Error in fetchAllPlaylistTracks:", error);
-        return [];
-    }
-}
 
 async function Playlists() {
     const playlists: SpotifyPlaylists[] | null = await getPlaylists();
@@ -74,20 +23,22 @@ async function Playlists() {
     }
 
     // Fetch all tracks from the first playlist
-    let songs: PlaylistTrackItem[] = [];
-    
+    // Loop through every playlist and retrieve every song
+    const allSongsByPlaylist: { [playlistId: string]: PlaylistTrackItem[] } = {};
+
     try {
-        if (playlists[0] && playlists[0].tracks && playlists[0].tracks.href) {
-            const playlistUrl = playlists[0].tracks.href;
-            songs = await fetchAllPlaylistTracks(playlistUrl);
-            
-            if (songs.length > 0) {
-                console.log("Songs:", songs[42]);
+        for (const playlist of playlists) {
+            if (playlist && playlist.tracks && playlist.tracks.href) {
+                const playlistUrl = playlist.tracks.href;
+                const songs = await fetchAllPlaylistTracks(playlistUrl);
+                allSongsByPlaylist[playlist.id] = songs;
             }
         }
     } catch (error) {
         console.error("Error fetching playlist tracks:", error);
     }
+    console.log(allSongsByPlaylist);
+    
 
     return (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-2 gap-4 md:gap-6">
