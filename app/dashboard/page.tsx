@@ -9,9 +9,6 @@ import Playlists from "../components/Playlists"
 
 export default async function Dashboard() {
   
-  
-  
-  
 
   return (
     <div className="min-h-screen bg-[#121212] text-white">
