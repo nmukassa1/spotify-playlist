@@ -28,7 +28,7 @@ export default async function Dashboard() {
               <PlaylistsSection />
 
               {/* Listening Analytics */}
-              <ListeningStats />
+              {/* <ListeningStats /> */}
             </div>
 
             <DashboardSidebar />

@@ -1,53 +1,55 @@
 "use client"
 
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Button } from "@/components/ui/button"
-import { Switch } from "@/components/ui/switch"
-import { Plus, Settings, Clock, TrendingUp, Heart, Sun } from "lucide-react"
+import { Card, CardContent, 
+  // CardDescription, 
+  CardHeader, CardTitle } from "@/components/ui/card"
+// import { Button } from "@/components/ui/button"
+// import { Switch } from "@/components/ui/switch"
+// import { Plus, Settings, Clock, TrendingUp, Heart, Sun } from "lucide-react"
 
-const activeRules = [
-  {
-    id: "1",
-    name: "Morning Boost",
-    description: "Energetic tracks for 6-10 AM",
-    isActive: true,
-    icon: Sun,
-    color: "text-yellow-400",
-    bgColor: "bg-yellow-400/20",
-  },
-  {
-    id: "2",
-    name: "Focus Mode",
-    description: "Instrumental during work hours",
-    isActive: true,
-    icon: Clock,
-    color: "text-blue-400",
-    bgColor: "bg-blue-400/20",
-  },
-  {
-    id: "3",
-    name: "Discover Weekly",
-    description: "New songs based on taste",
-    isActive: false,
-    icon: TrendingUp,
-    color: "text-[#1DB954]",
-    bgColor: "bg-[#1DB954]/20",
-  },
-  {
-    id: "4",
-    name: "Liked Songs Mix",
-    description: "Mix of your favorite tracks",
-    isActive: true,
-    icon: Heart,
-    color: "text-red-400",
-    bgColor: "bg-red-400/20",
-  },
-]
+// const activeRules = [
+//   {
+//     id: "1",
+//     name: "Morning Boost",
+//     description: "Energetic tracks for 6-10 AM",
+//     isActive: true,
+//     icon: Sun,
+//     color: "text-yellow-400",
+//     bgColor: "bg-yellow-400/20",
+//   },
+//   {
+//     id: "2",
+//     name: "Focus Mode",
+//     description: "Instrumental during work hours",
+//     isActive: true,
+//     icon: Clock,
+//     color: "text-blue-400",
+//     bgColor: "bg-blue-400/20",
+//   },
+//   {
+//     id: "3",
+//     name: "Discover Weekly",
+//     description: "New songs based on taste",
+//     isActive: false,
+//     icon: TrendingUp,
+//     color: "text-[#1DB954]",
+//     bgColor: "bg-[#1DB954]/20",
+//   },
+//   {
+//     id: "4",
+//     name: "Liked Songs Mix",
+//     description: "Mix of your favorite tracks",
+//     isActive: true,
+//     icon: Heart,
+//     color: "text-red-400",
+//     bgColor: "bg-red-400/20",
+//   },
+// ]
 
 export default function RulesPanel() {
   return (
     <div className="space-y-6">
-      <Card className="bg-[#191414] border-[#282828]">
+      {/* <Card className="bg-[#191414] border-[#282828]">
         <CardHeader className="pb-4 px-4 md:px-6">
           <CardTitle className="flex items-center gap-2 text-white text-lg">
             <Settings className="h-5 w-5" />
@@ -86,7 +88,7 @@ export default function RulesPanel() {
             Create New Rule
           </Button>
         </CardContent>
-      </Card>
+      </Card> */}
 
       <Card className="bg-[#191414] border-[#282828]">
         <CardHeader className="pb-4 px-4 md:px-6">
