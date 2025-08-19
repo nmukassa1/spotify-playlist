@@ -65,12 +65,11 @@ export async function getAccessToken() {
     });
 
     if (!response.ok) {
-      console.log(response);
+      console.error(response);
       throw new Error(`Failed to fetch access token: ${response.status} ${response.statusText}`);
     }
 
     const data = await response.json();
-    console.log("Access Token:", data.access_token);
     
     return data.access_token; // { access_token, token_type, expires_in }
   } catch (err) {
