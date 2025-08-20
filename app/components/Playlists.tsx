@@ -1,4 +1,4 @@
-import {  getPlaylists } from "@/lib/spotify/queries";
+import { getPlaylists } from "@/lib/spotify/queries";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -9,9 +9,8 @@ import { PlaylistTrackItem, SpotifyPlaylists } from "@/lib/spotify/types";
 
 
 async function Playlists() {
+    // Get user's playlists
     const playlists: SpotifyPlaylists[] | null = await getPlaylists();
-    
-    console.log(playlists);
     
     // Check if playlists exist and have content
     if (!playlists || playlists.length === 0) {
@@ -27,6 +26,7 @@ async function Playlists() {
     const allSongsByPlaylist: { [playlistId: string]: PlaylistTrackItem[] } = {};
 
     try {
+        // Get the remaining chunck of songs since spotify only returns 100 songs 
         for (const playlist of playlists) {
             if (playlist && playlist.tracks && playlist.tracks.href) {
                 const playlistUrl = playlist.tracks.href;
@@ -37,7 +37,21 @@ async function Playlists() {
     } catch (error) {
         console.error("Error fetching playlist tracks:", error);
     }
-    console.log(allSongsByPlaylist);
+    
+         // Flatten allSongsByPlaylist and return all tracks as a single array
+     const allTrackObjects = Object.values(allSongsByPlaylist).flat().map(item => item.track);
+    
+    // Create array of song names with artists (e.g., "Stand By Me - Ben E King")
+    const songNamesWithArtists = allTrackObjects.map(track => {
+        const songName = track.name;
+        const artistNames = track.artists.map(artist => artist.name).join(', ');
+        return `${songName} - ${artistNames}`;
+    });
+
+    console.log("Song names with artists:", songNamesWithArtists);
+    console.log("Total songs:", songNamesWithArtists.length);
+
+//     const audioFeature = await getAudioFeature(testSongId)
     
 
     return (
