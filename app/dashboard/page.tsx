@@ -3,7 +3,7 @@ import DashboardHeader from "../components/dashboard-header"
 import MobileHeader from "../components/mobile-header"
 import QuickStats from "../components/quick-stats"
 import PlaylistsSection from "../components/playlists-section"
-import ListeningStats from "../components/listening-stats"
+// import ListeningStats from "../components/listening-stats"
 import DashboardSidebar from "../components/dashboard-sidebar"
 import Playlists from "../components/Playlists"
 
