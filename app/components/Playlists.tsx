@@ -51,7 +51,6 @@ async function Playlists() {
     console.log("Song names with artists:", songNamesWithArtists);
     console.log("Total songs:", songNamesWithArtists.length);
 
-//     const audioFeature = await getAudioFeature(testSongId)
     
 
     return (
