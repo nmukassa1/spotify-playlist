@@ -1,5 +1,7 @@
-import RulesPanel from "./rules-panel"
+
 // import RecentActivity from "./recent-activity"
+
+import RulesPanel from "@/app/components/rules-panel";
 
 export default function DashboardSidebar() {
   return (

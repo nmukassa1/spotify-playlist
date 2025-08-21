@@ -1,36 +1,114 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Spotify Playlist Analyzer
 
-## Getting Started
+An AI-powered music analysis application that analyzes your Spotify playlists using OpenAI to provide insights about genres, moods, themes, and recommendations.
 
-First, run the development server:
+## 🏗️ Project Structure
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+```
+spotify-playlist/
+├── app/                    # Next.js app directory
+│   ├── api/               # API routes
+│   ├── auth/              # Authentication
+│   ├── dashboard/         # Dashboard page
+│   ├── landing/           # Landing page
+│   └── layout.tsx         # Root layout
+├── components/             # UI Components
+│   ├── ui/                # Base UI components (shadcn/ui)
+│   ├── spotify/           # Spotify-specific components
+│   ├── dashboard/         # Dashboard components
+│   ├── landing/           # Landing page components
+│   └── common/            # Shared components
+├── lib/                    # Core libraries
+│   ├── spotify/           # Spotify API integration
+│   ├── openai/            # OpenAI analysis layer
+│   ├── analysis/          # Music analysis engines
+│   ├── cache/             # Caching layer
+│   ├── utils/             # Utility functions
+│   └── hooks/             # React hooks
+├── actions/                # Server Actions
+│   ├── spotify/           # Spotify operations
+│   ├── analysis/          # Analysis operations
+│   └── cache/             # Cache management
+├── config/                 # Configuration
+│   ├── constants.ts       # App constants
+│   └── api.ts             # API configuration
+├── types/                  # TypeScript types
+│   ├── common.ts          # Common types
+│   ├── spotify.ts         # Spotify types
+│   ├── analysis.ts        # Analysis types
+│   └── api.ts             # API types
+└── docs/                   # Documentation
+    └── PLAYLIST_ARCHITECTURE.md
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## 🚀 Features
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+- **Spotify Integration**: Fetch and analyze your playlists
+- **AI Analysis**: OpenAI-powered genre, mood, and theme analysis
+- **Batch Processing**: Handle large song collections efficiently
+- **Caching**: Intelligent caching for analysis results
+- **Server Actions**: Modern Next.js 13+ data fetching
+- **Type Safety**: Full TypeScript support
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## 🛠️ Tech Stack
 
-## Learn More
+- **Frontend**: Next.js 13+, React, TypeScript
+- **UI**: shadcn/ui components, Tailwind CSS
+- **AI**: OpenAI GPT models
+- **Caching**: In-memory + Redis support
+- **Authentication**: Spotify OAuth
 
-To learn more about Next.js, take a look at the following resources:
+## 📦 Installation
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+1. Clone the repository
+2. Install dependencies: `npm install`
+3. Set up environment variables:
+   ```env
+   SPOTIFY_CLIENT_ID=your_spotify_client_id
+   SPOTIFY_CLIENT_SECRET=your_spotify_client_secret
+   OPENAI_API_KEY=your_openai_api_key
+   ```
+4. Run the development server: `npm run dev`
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## 🔧 Development
 
-## Deploy on Vercel
+### Adding New Analysis Types
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+1. Add the analysis type to `types/analysis.ts`
+2. Create the analysis engine in `lib/analysis/`
+3. Add prompts in `lib/openai/prompts/`
+4. Create Server Actions in `actions/analysis/`
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+### Adding New Components
+
+1. Place in appropriate category folder under `components/`
+2. Use existing UI components from `components/ui/`
+3. Follow the established naming conventions
+
+### Adding New Types
+
+1. Create in appropriate file under `types/`
+2. Export from `types/index.ts`
+3. Use consistent naming conventions
+
+## 📚 Architecture
+
+The application follows a modular architecture with clear separation of concerns:
+
+- **Components**: UI presentation layer
+- **Actions**: Server-side data operations
+- **Lib**: Core business logic and external integrations
+- **Types**: TypeScript type definitions
+- **Config**: Application configuration
+
+## 🤝 Contributing
+
+1. Follow the established folder structure
+2. Use TypeScript for all new code
+3. Follow the existing naming conventions
+4. Add proper error handling and validation
+5. Update types and documentation as needed
+
+## 📄 License
+
+This project is licensed under the MIT License.

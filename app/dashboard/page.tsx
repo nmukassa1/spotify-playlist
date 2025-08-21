@@ -1,11 +1,11 @@
 
-import DashboardHeader from "../components/dashboard-header"
-import MobileHeader from "../components/mobile-header"
-import QuickStats from "../components/quick-stats"
-import PlaylistsSection from "../components/playlists-section"
-// import ListeningStats from "../components/listening-stats"
-import DashboardSidebar from "../components/dashboard-sidebar"
-import Playlists from "../components/Playlists"
+import DashboardHeader from "../../components/dashboard/dashboard-header"
+import MobileHeader from "../../components/dashboard/mobile-header"
+import QuickStats from "../../components/common/quick-stats"
+import PlaylistsSection from "../../components/common/playlists-section"
+// import ListeningStats from "../../components/common/listening-stats"
+import DashboardSidebar from "../../components/dashboard/dashboard-sidebar"
+import Playlists from "../../components/spotify/Playlists"
 
 export default async function Dashboard() {
   
