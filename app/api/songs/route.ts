@@ -14,6 +14,10 @@ export async function POST(request: NextRequest) {
 
     const songs = await fetchSongs(playlists);
     
+    /*
+      Analyse songs & segment
+    */
+    
     return NextResponse.json({
       success: true,
       songs,
