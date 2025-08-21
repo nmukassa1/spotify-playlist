@@ -1,6 +1,7 @@
 "use server"
 import { getAccessToken, getSpotifyAccount } from "./auth";
 import { SpotifyPlaylists, TrackParentNode } from "@/lib/spotify/types";
+import { getAllPlaylistTracksData } from "./playlistService";
 
 export async function getPlaylists(): Promise<SpotifyPlaylists[] | null> {
   const spotifyAccount = await getSpotifyAccount();
@@ -55,5 +56,27 @@ export async function getPlaylistTracks(playlistLink: string): Promise<TrackPare
   } catch (err) {
     console.error(err);
     return null;
+  }
+}
+
+export async function fetchSongs(playlists: SpotifyPlaylists[]): Promise<string[]> {
+  console.log("Fetching songs...");
+  
+  // Fetch all tracks from all playlists using the modular service
+  let songNamesWithArtists: string[] = [];
+  let totalSongs = 0;
+  try {
+      const result = await getAllPlaylistTracksData(playlists);
+      songNamesWithArtists = result.songNamesWithArtists;
+      totalSongs = result.totalSongs;
+      
+      console.log("Song names with artists:", songNamesWithArtists);
+      console.log("Total songs:", totalSongs);
+      return songNamesWithArtists;
+  } catch (error) {
+      console.error("Error fetching playlist tracks:", error);
+      // Initialize with empty data on error
+      songNamesWithArtists = [];
+      return songNamesWithArtists;
   }
 }

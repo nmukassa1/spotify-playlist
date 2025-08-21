@@ -4,9 +4,8 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Play, MoreHorizontal, Music, Clock, ExternalLink } from "lucide-react";
 import Image from "next/image";
-import {fetchAllPlaylistTracks} from "@/lib/spotify/util";
-import { PlaylistTrackItem, SpotifyPlaylists } from "@/lib/spotify/types";
-
+import { SpotifyPlaylists } from "@/lib/spotify/types";
+import FetchSongsButton from "./FetchSongsButton";
 
 async function Playlists() {
     // Get user's playlists
@@ -21,39 +20,11 @@ async function Playlists() {
         );
     }
 
-    // Fetch all tracks from the first playlist
-    // Loop through every playlist and retrieve every song
-    const allSongsByPlaylist: { [playlistId: string]: PlaylistTrackItem[] } = {};
-
-    try {
-        // Get the remaining chunck of songs since spotify only returns 100 songs 
-        for (const playlist of playlists) {
-            if (playlist && playlist.tracks && playlist.tracks.href) {
-                const playlistUrl = playlist.tracks.href;
-                const songs = await fetchAllPlaylistTracks(playlistUrl);
-                allSongsByPlaylist[playlist.id] = songs;
-            }
-        }
-    } catch (error) {
-        console.error("Error fetching playlist tracks:", error);
-    }
-    
-         // Flatten allSongsByPlaylist and return all tracks as a single array
-     const allTrackObjects = Object.values(allSongsByPlaylist).flat().map(item => item.track);
-    
-    // Create array of song names with artists (e.g., "Stand By Me - Ben E King")
-    const songNamesWithArtists = allTrackObjects.map(track => {
-        const songName = track.name;
-        const artistNames = track.artists.map(artist => artist.name).join(', ');
-        return `${songName} - ${artistNames}`;
-    });
-
-    console.log("Song names with artists:", songNamesWithArtists);
-    console.log("Total songs:", songNamesWithArtists.length);
 
     
 
-    return (
+    return (<>
+        <FetchSongsButton playlists={playlists} />
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-2 gap-4 md:gap-6">
             {playlists.map((playlist: SpotifyPlaylists) => (
                 <Card
@@ -148,6 +119,7 @@ async function Playlists() {
                 </Card>
             ))}
         </div>
+    </>
     );
 }
 
