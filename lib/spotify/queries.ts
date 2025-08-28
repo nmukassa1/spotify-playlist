@@ -1,7 +1,7 @@
 "use server";
 import { getAccessToken } from "./auth";
 import type {
-  SpotifyPlaylists,
+  Playlist,
   SpotifyPlaylistTracksResponse,
 } from "@/lib/spotify/types";
 
@@ -9,7 +9,7 @@ export async function getPlaylists({
   userId,
 }: {
   userId: string;
-}): Promise<SpotifyPlaylists[] | { error: string }> {
+}): Promise<Playlist[] | { error: string }> {
   if (!userId) {
     const error = "No user Id provided";
     console.error(error);
@@ -44,16 +44,16 @@ export async function getPlaylists({
   }
 }
 
-export async function getPlaylist(
+export async function getPlaylistTracks(
   playlistId: string,
   offset = 0
-): Promise<SpotifyPlaylistTracksResponse | { error: string }> {
+): Promise<SpotifyPlaylistTracksResponse | undefined> {
   const limiter = 100;
 
   if (!playlistId) {
     const error = "No playlist Id provided";
     console.error(error);
-    return { error };
+    return;
   }
 
   const playlistUrl = `https://api.spotify.com/v1/playlists/${playlistId}/tracks?limit=${limiter}&offset=${offset}`;
@@ -79,6 +79,6 @@ export async function getPlaylist(
     return data; // ✅ plain object for client
   } catch (err) {
     console.error(err);
-    return { error: err instanceof Error ? err.message : String(err) };
+    return;
   }
 }

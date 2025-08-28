@@ -1,4 +1,4 @@
-export interface SpotifyPlaylists {
+export interface Playlist {
   id: string;
   name: string;
   description: string;
@@ -98,4 +98,14 @@ export interface TrackParentNode {
   video_thumbnail: {
     url: string | null;
   };
+}
+export interface TrackObject {
+  id: string;
+  name: string;
+  href: string;
+  artists: {
+    id: string;
+    name: string;
+    href: string;
+  }[];
 }

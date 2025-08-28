@@ -1,12 +1,17 @@
 "use client";
-import { getPlaylist, getPlaylists } from "@/lib/spotify/queries";
+import { getPlaylistTracks, getPlaylists } from "@/lib/spotify/queries";
 import { Button } from "../ui/button";
 import { getSpotifyAccount } from "@/lib/spotify/auth";
 import {
-  SpotifyPlaylists,
+  Playlist,
   SpotifyPlaylistTracksResponse,
   TrackParentNode,
+  TrackObject,
 } from "@/lib/spotify/types";
+import {
+  extractTrackObject,
+  getTotalSongsFromPlaylist,
+} from "@/lib/spotify/util";
 
 function FetchSongsButton() {
   const handleClick = async () => {
@@ -14,8 +19,9 @@ function FetchSongsButton() {
       const user = await getSpotifyAccount();
       if (!user) throw new Error("Error getting user");
 
-      const playlists: SpotifyPlaylists[] | { error: string } =
-        await getPlaylists({ userId: user.externalId });
+      const playlists: Playlist[] | { error: string } = await getPlaylists({
+        userId: user.externalId,
+      });
 
       console.log(playlists);
       return playlists;
@@ -26,63 +32,43 @@ function FetchSongsButton() {
 
   const handleGetPlaylist = async (
     playlistId: string
-  ): Promise<string[] | undefined> => {
+  ): Promise<TrackObject[] | undefined> => {
     try {
-      let songs: TrackParentNode[] = [];
-
       // Get first 100 tracks
       const playlist: SpotifyPlaylistTracksResponse | { error: string } =
-        await getPlaylist(playlistId);
+        await getPlaylistTracks(playlistId);
 
       if (!playlist || "error" in playlist) {
         throw new Error("Failed to fetch playlist");
       }
 
-      songs = playlist.items;
+      const songsFromPlaylist = await getTotalSongsFromPlaylist(
+        playlist,
+        playlistId
+      );
 
-      // Handle batching if playlist has > 100 tracks
-      const limiter = 100;
-      const iterations = Math.ceil(playlist.total / limiter);
-
-      for (let i = 1; i < iterations; i++) {
-        const nextOffset = i * limiter;
-
-        const nextBatch = await getPlaylist(playlistId, nextOffset);
-
-        if (!nextBatch || "error" in nextBatch) {
-          throw new Error(
-            `Error fetching batch ${i + 1}: ${
-              nextBatch && "error" in nextBatch
-                ? nextBatch.error
-                : "Unknown error"
-            }`
-          );
-        }
-
-        songs = [...songs, ...nextBatch.items];
+      if (!songsFromPlaylist) {
+        console.error("Failed to get total songs from playlist");
+        return;
       }
 
-      // Extract song name + artist names
-      const extracted = songs.map((item) => {
-        const track = item.track;
-        const { artists, name } = track;
-        const artistsNames = artists.map((artist) => artist.name);
-        return `${name} by ${artistsNames.join(", ")}`;
-      });
+      const extractedTrackObject = await extractTrackObject(songsFromPlaylist);
 
-      return extracted;
+      return extractedTrackObject;
     } catch (err) {
       console.error(err);
     }
   };
 
+  // bringing it all together
   const x = async () => {
     try {
       const user = await getSpotifyAccount();
       if (!user) throw new Error("Error getting user");
 
-      const playlists: SpotifyPlaylists[] | { error: string } =
-        await getPlaylists({ userId: user.externalId });
+      const playlists: Playlist[] | { error: string } = await getPlaylists({
+        userId: user.externalId,
+      });
 
       if (!Array.isArray(playlists) || playlists.length === 0) {
         console.error("Playlists is not an array");
@@ -90,16 +76,20 @@ function FetchSongsButton() {
         return;
       }
 
-      let allSongs: string[] = [];
+      let songs: TrackParentNode[] = [];
 
       for (const playlist of playlists) {
-        const res = await handleGetPlaylist(playlist.id);
-        if (res) {
-          allSongs = [...allSongs, ...res];
-        }
+        const res: TrackParentNode[] | undefined =
+          await getTotalSongsFromPlaylist(playlist.id);
+
+        if (!res) return;
+
+        songs = [...songs, ...(res as TrackParentNode[])];
       }
 
-      console.log(allSongs);
+      const extractedObj = await extractTrackObject(songs);
+
+      console.log("Extracted Songs:", extractedObj);
       return allSongs;
     } catch (err) {
       console.error(err);
@@ -109,6 +99,13 @@ function FetchSongsButton() {
   return (
     <>
       <Button onClick={handleClick}>Fetch Playlists</Button>
+      <Button
+        onClick={() => {
+          handleGetPlaylist("7AFhqVzNXAT7RsW03rVcGS");
+        }}
+      >
+        Get Playlist
+      </Button>
       <Button onClick={x}>Fetch All Songs</Button>
     </>
   );
