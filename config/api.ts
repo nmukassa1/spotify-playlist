@@ -4,8 +4,7 @@ export const API_ENDPOINTS = {
   spotify: {
     auth: '/api/auth/spotify',
     callback: '/api/auth/callback/spotify',
-    playlists: '/api/spotify/playlists',
-    tracks: '/api/spotify/tracks',
+    tracks: 'https://api.spotify.com/v1/tracks',
     profile: '/api/spotify/profile',
   },
   analysis: {

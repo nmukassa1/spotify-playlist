@@ -4,7 +4,7 @@ import { Card, CardContent } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Play, MoreHorizontal, Clock, Music } from "lucide-react"
-import Image from "next/image"
+// import Image from "next/image"
 
 const mockPlaylists = [
   {
@@ -69,13 +69,13 @@ export default function PlaylistGrid() {
                 <div
                   className={`w-16 h-16 sm:w-20 sm:h-20 rounded-lg bg-gradient-to-br ${playlist.color} flex items-center justify-center`}
                 >
-                  <Image
+                  {/* <Image
                     src={playlist.image || "/placeholder.svg"}
                     alt={playlist.name}
                     width={80}
                     height={80}
                     className="rounded-lg object-cover"
-                  />
+                  /> */}
                 </div>
                 <Button
                   size="icon"

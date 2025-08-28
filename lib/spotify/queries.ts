@@ -1,82 +1,84 @@
-"use server"
-import { getAccessToken, getSpotifyAccount } from "./auth";
-import { SpotifyPlaylists, TrackParentNode } from "@/lib/spotify/types";
-import { getAllPlaylistTracksData } from "./playlistService";
+"use server";
+import { getAccessToken } from "./auth";
+import type {
+  SpotifyPlaylists,
+  SpotifyPlaylistTracksResponse,
+} from "@/lib/spotify/types";
 
-export async function getPlaylists(): Promise<SpotifyPlaylists[] | null> {
-  const spotifyAccount = await getSpotifyAccount();
-  const userId = spotifyAccount?.externalId;
-  const accessToken = await getAccessToken();
+export async function getPlaylists({
+  userId,
+}: {
+  userId: string;
+}): Promise<SpotifyPlaylists[] | { error: string }> {
+  if (!userId) {
+    const error = "No user Id provided";
+    console.error(error);
+    return { error };
+  }
 
-  
+  const limiter = 50;
+  const offset = 0;
+  const apiEndpoint = `https://api.spotify.com/v1/users/${userId}/playlists?limit=${limiter}&offset=${offset}`;
 
   try {
-    const response = await fetch(`https://api.spotify.com/v1/users/${userId}/playlists`, {
+    const accessToken = await getAccessToken();
+    if (!accessToken) throw new Error("Error getting access token");
+
+    const res = await fetch(apiEndpoint, {
       headers: {
-        // Authorization: `Bearer ${process.env.AUTH_SPOTIFY_SECRET}`
-        Authorization: `Bearer ${accessToken}`
-      }
+        Authorization: `Bearer ${accessToken}`,
+      },
+      // cache: "no-store", // <- optional: avoid Next.js caching API responses
     });
 
-    if (!response.ok) {
-      console.error(response);
-      
-      throw new Error(`Failed to fetch playlists: ${response.status} ${response.statusText}`);
+    if (!res.ok) {
+      throw new Error(`Spotify API error: ${res.status} ${res.statusText}`);
     }
-    
 
-    const {items: playlists} = await response.json();
+    const data = await res.json(); // ✅ await here
 
-    // console.log("Playlists: ", playlists);
-    
-    return playlists;
+    return data.items; // ✅ plain object for client
   } catch (err) {
     console.error(err);
-    return null;
+    return { error: err instanceof Error ? err.message : String(err) };
   }
 }
 
-export async function getPlaylistTracks(playlistLink: string): Promise<TrackParentNode | null>{
-  const accessToken = await getAccessToken();
+export async function getPlaylist(
+  playlistId: string,
+  offset = 0
+): Promise<SpotifyPlaylistTracksResponse | { error: string }> {
+  const limiter = 100;
+
+  if (!playlistId) {
+    const error = "No playlist Id provided";
+    console.error(error);
+    return { error };
+  }
+
+  const playlistUrl = `https://api.spotify.com/v1/playlists/${playlistId}/tracks?limit=${limiter}&offset=${offset}`;
+
   try {
-    const response = await fetch(playlistLink, {
+    const accessToken = await getAccessToken();
+    if (!accessToken) throw new Error("Error getting access token");
+
+    const res = await fetch(playlistUrl, {
       headers: {
-        Authorization: `Bearer ${accessToken}`
-      }
+        Authorization: `Bearer ${accessToken}`,
+      },
+      // cache: "no-store", // <- optional: avoid Next.js caching API responses
     });
 
-    if (!response.ok) {
-      console.error(response);
-      
-      throw new Error(`Failed to fetch playlist: ${response.status} ${response.statusText}`);
+    if (!res.ok) {
+      throw new Error(`Spotify API error: ${res.status} ${res.statusText}`);
     }
 
-    const data = await response.json();
-    return data;
+    const data = await res.json(); // ✅ await here
+    console.log(data);
+
+    return data; // ✅ plain object for client
   } catch (err) {
     console.error(err);
-    return null;
-  }
-}
-
-export async function fetchSongs(playlists: SpotifyPlaylists[]): Promise<string[]> {
-  console.log("Fetching songs...");
-  
-  // Fetch all tracks from all playlists using the modular service
-  let songNamesWithArtists: string[] = [];
-  let totalSongs = 0;
-  try {
-      const result = await getAllPlaylistTracksData(playlists);
-      songNamesWithArtists = result.songNamesWithArtists;
-      totalSongs = result.totalSongs;
-      
-      console.log("Song names with artists:", songNamesWithArtists);
-      console.log("Total songs:", totalSongs);
-      return songNamesWithArtists;
-  } catch (error) {
-      console.error("Error fetching playlist tracks:", error);
-      // Initialize with empty data on error
-      songNamesWithArtists = [];
-      return songNamesWithArtists;
+    return { error: err instanceof Error ? err.message : String(err) };
   }
 }

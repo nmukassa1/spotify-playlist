@@ -1,72 +1,117 @@
-'use client';
+"use client";
+import { getPlaylist, getPlaylists } from "@/lib/spotify/queries";
+import { Button } from "../ui/button";
+import { getSpotifyAccount } from "@/lib/spotify/auth";
+import {
+  SpotifyPlaylists,
+  SpotifyPlaylistTracksResponse,
+  TrackParentNode,
+} from "@/lib/spotify/types";
 
-import { Button } from "@/components/ui/button";
-import { useFetchSongs } from "@/lib/hooks/useFetchSongs";
-import { SpotifyPlaylists } from "@/lib/spotify/types";
-import { Music, Loader2 } from "lucide-react";
-
-interface FetchSongsButtonProps {
-  playlists: SpotifyPlaylists[];
-}
-
-export default function FetchSongsButton({ playlists }: FetchSongsButtonProps) {
-  const { songs, totalSongs, isLoading, error, fetchSongs } = useFetchSongs();
-
-  const handleFetchSongs = async () => {
+function FetchSongsButton() {
+  const handleClick = async () => {
     try {
-      console.log('Client: Button clicked, playlists:', playlists.length);
-      await fetchSongs(playlists);
-    } catch (error) {
-      console.error('Client: Failed to fetch songs:', error);
+      const user = await getSpotifyAccount();
+      if (!user) throw new Error("Error getting user");
+
+      const playlists: SpotifyPlaylists[] | { error: string } =
+        await getPlaylists({ userId: user.externalId });
+
+      console.log(playlists);
+      return playlists;
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  const handleGetPlaylist = async (
+    playlistId: string
+  ): Promise<string[] | undefined> => {
+    try {
+      let songs: TrackParentNode[] = [];
+
+      // Get first 100 tracks
+      const playlist: SpotifyPlaylistTracksResponse | { error: string } =
+        await getPlaylist(playlistId);
+
+      if (!playlist || "error" in playlist) {
+        throw new Error("Failed to fetch playlist");
+      }
+
+      songs = playlist.items;
+
+      // Handle batching if playlist has > 100 tracks
+      const limiter = 100;
+      const iterations = Math.ceil(playlist.total / limiter);
+
+      for (let i = 1; i < iterations; i++) {
+        const nextOffset = i * limiter;
+
+        const nextBatch = await getPlaylist(playlistId, nextOffset);
+
+        if (!nextBatch || "error" in nextBatch) {
+          throw new Error(
+            `Error fetching batch ${i + 1}: ${
+              nextBatch && "error" in nextBatch
+                ? nextBatch.error
+                : "Unknown error"
+            }`
+          );
+        }
+
+        songs = [...songs, ...nextBatch.items];
+      }
+
+      // Extract song name + artist names
+      const extracted = songs.map((item) => {
+        const track = item.track;
+        const { artists, name } = track;
+        const artistsNames = artists.map((artist) => artist.name);
+        return `${name} by ${artistsNames.join(", ")}`;
+      });
+
+      return extracted;
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  const x = async () => {
+    try {
+      const user = await getSpotifyAccount();
+      if (!user) throw new Error("Error getting user");
+
+      const playlists: SpotifyPlaylists[] | { error: string } =
+        await getPlaylists({ userId: user.externalId });
+
+      if (!Array.isArray(playlists) || playlists.length === 0) {
+        console.error("Playlists is not an array");
+
+        return;
+      }
+
+      let allSongs: string[] = [];
+
+      for (const playlist of playlists) {
+        const res = await handleGetPlaylist(playlist.id);
+        if (res) {
+          allSongs = [...allSongs, ...res];
+        }
+      }
+
+      console.log(allSongs);
+      return allSongs;
+    } catch (err) {
+      console.error(err);
     }
   };
 
   return (
-    <div className="mb-6 p-4 bg-[#282828] rounded-lg border border-[#3E3E3E]">
-      <div className="flex items-center justify-between mb-4">
-        <h3 className="text-lg font-semibold text-white">Fetch All Songs</h3>
-        <Button
-          onClick={handleFetchSongs}
-          disabled={isLoading}
-          className="bg-[#1DB954] hover:bg-[#1ed760] text-black"
-        >
-          {isLoading ? (
-            <>
-              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-              Fetching...
-            </>
-          ) : (
-            <>
-              <Music className="mr-2 h-4 w-4" />
-              Fetch Songs
-            </>
-          )}
-        </Button>
-      </div>
-
-      {error && (
-        <div className="text-red-400 text-sm mb-3">
-          Error: {error}
-        </div>
-      )}
-
-      {songs.length > 0 && (
-        <div className="space-y-2">
-          <div className="text-green-400 text-sm">
-            ✅ Successfully fetched {totalSongs} songs
-          </div>
-          <div className="text-[#B3B3B3] text-xs">
-            First few songs: {songs.slice(0, 3).join(', ')}
-            {songs.length > 3 && `... and ${songs.length - 3} more`}
-          </div>
-        </div>
-      )}
-
-      {isLoading && (
-        <div className="text-[#B3B3B3] text-sm">
-          Fetching songs from {playlists.length} playlists...
-        </div>
-      )}
-    </div>
+    <>
+      <Button onClick={handleClick}>Fetch Playlists</Button>
+      <Button onClick={x}>Fetch All Songs</Button>
+    </>
   );
 }
+
+export default FetchSongsButton;
