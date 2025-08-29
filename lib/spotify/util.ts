@@ -4,6 +4,7 @@ import {
   TrackParentNode,
 } from "@/lib/spotify/types";
 import { getPlaylistTracks } from "./queries";
+import { getAccessToken } from "./auth";
 
 export async function extractTrackObject(
   songs: TrackParentNode[]
@@ -67,4 +68,45 @@ export async function getTotalSongsFromPlaylist(
 
   // Return total songs
   return songs;
+}
+
+export async function getAudioFeature(trackId: string) {
+  const accessToken = await getAccessToken();
+  if (!accessToken) throw new Error("Error getting access token");
+
+  if (!trackId) {
+    console.error("No track ID found");
+    return;
+  }
+
+  try {
+    // const response = await fetch(
+    //   `https://track-analysis.p.rapidapi.com/pktx/spotify/${trackId}`,
+    //   {
+    //     headers: {
+    //       "x-rapidapi-host": "track-analysis.p.rapidapi.com",
+    //       "x-rapidapi-key":
+    //         "ea0897f4cfmsh80cb589ae78bceap1787b5jsne4777e340118",
+    //     },
+    //   }
+    // );
+    const response = await fetch(
+      `https://api.spotify.com/v1/audio-features/${trackId}`,
+      {
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
+      }
+    );
+
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+
+    const data = await response.json();
+    console.log("Audio Feature Data:", data);
+    return data;
+  } catch (error) {
+    console.error("Error fetching audio feature:", error);
+  }
 }
