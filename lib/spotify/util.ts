@@ -27,7 +27,6 @@ export async function extractTrackObject(
 }
 
 export async function getTotalSongsFromPlaylist(
-  //   playlistObj: SpotifyPlaylistTracksResponse,
   playlistId: string
 ): Promise<TrackParentNode[] | undefined> {
   if (!playlistId) {
@@ -42,31 +41,40 @@ export async function getTotalSongsFromPlaylist(
     return;
   }
 
-  let songs: TrackParentNode[] = [];
-
-  songs = playlist.items;
+  let songs: TrackParentNode[] = playlist.items;
 
   // Handle batching if playlist has > 100 tracks
   const limiter = 100;
-  const iterations = Math.ceil(playlist.total / limiter);
+  const totalTracks = playlist.total;
+  const iterations = Math.ceil(totalTracks / limiter);
 
-  for (let i = 1; i < iterations; i++) {
-    const nextOffset = i * limiter;
-
-    const nextBatch = await getPlaylistTracks(playlistId, nextOffset);
-
-    if (!nextBatch || "error" in nextBatch) {
-      throw new Error(
-        `Error fetching batch ${i + 1}: ${
-          nextBatch && "error" in nextBatch ? nextBatch.error : "Unknown error"
-        }`
-      );
-    }
-
-    songs = [...songs, ...nextBatch.items];
+  // If no additional batches needed, return early
+  if (iterations <= 1) {
+    return songs;
   }
 
-  // Return total songs
+  console.log(`Fetching ${iterations - 1} additional batches for playlist ${playlistId}`);
+
+  // Create all batch promises in parallel
+  const batchPromises = [];
+  for (let i = 1; i < iterations; i++) {
+    const nextOffset = i * limiter;
+    batchPromises.push(getPlaylistTracks(playlistId, nextOffset));
+  }
+
+  // Execute all batches in parallel
+  const batchResults = await Promise.allSettled(batchPromises);
+
+  // Combine successful results
+  batchResults.forEach((result, index) => {
+    if (result.status === 'fulfilled' && result.value && !("error" in result.value)) {
+      songs = [...songs, ...result.value.items];
+    } else {
+      console.warn(`Failed to fetch batch ${index + 2} for playlist ${playlistId}:`, 
+        result.status === 'rejected' ? result.reason : 'Unknown error');
+    }
+  });
+
   return songs;
 }
 

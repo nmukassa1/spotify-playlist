@@ -3,6 +3,8 @@ import FetchSongsButton from "@/components/spotify/FetchSongsButton"
 import DashboardHeader from "../../components/dashboard/dashboard-header"
 import { PlaylistProvider } from "@/context/PlaylistProvider"
 import Playlists from "@/components/spotify/Playlists"
+import { SongProvider } from "@/context/AllSongs"
+import AllSongs from "@/components/spotify/AllSongs"
 
 export default async function Dashboard() {
   
@@ -10,6 +12,7 @@ export default async function Dashboard() {
   return (
     <>
     <PlaylistProvider>
+    <SongProvider>
     <div className="min-h-screen bg-[#171717] text-white">
       <DashboardHeader />
 
@@ -21,10 +24,12 @@ export default async function Dashboard() {
             <section>
               <h1>Your Playlists</h1>
               <Playlists />
+<AllSongs />
             </section>
         </div>
       </main>
     </div>
+    </SongProvider>
     </PlaylistProvider>
     </>
   )
