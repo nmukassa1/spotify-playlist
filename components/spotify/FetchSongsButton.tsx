@@ -8,9 +8,13 @@ import {
   getAudioFeature,
   getTotalSongsFromPlaylist,
 } from "@/lib/spotify/util";
+import { usePlaylistContext } from "@/context/PlaylistProvider";
+
 
 function FetchSongsButton() {
-  const handleClick = async () => {
+  const { setPlaylists } = usePlaylistContext();
+
+  const handleGetPlaylists = async () => {
     try {
       const user = await getSpotifyAccount();
       if (!user) throw new Error("Error getting user");
@@ -19,7 +23,8 @@ function FetchSongsButton() {
         userId: user.externalId,
       });
 
-      console.log(playlists);
+      console.log("Playlists fetched:", playlists);
+      setPlaylists(playlists as Playlist[]);
       return playlists;
     } catch (err) {
       console.error(err);
@@ -76,7 +81,7 @@ function FetchSongsButton() {
 
   return (
     <>
-      <Button onClick={handleClick}>Fetch Playlists</Button>
+      <Button onClick={handleGetPlaylists}>Fetch Playlists</Button>
       <Button onClick={x}>Fetch All Songs</Button>
     </>
   );
